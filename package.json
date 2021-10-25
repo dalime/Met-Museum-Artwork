@@ -1,0 +1,16 @@
+{
+  "name": "nodejs-artwork-challenge",
+  "version": "1.0.0",
+  "description": "A website that displays artwork based on Metropolitan Museums's API",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "keywords": [
+    "node",
+    "nodejs",
+    "express"
+  ],
+  "author": "Danny Lim",
+  "license": "MIT"
+}
