@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+
+import Artwork from './components/Artwork';
 import './App.css';
 
 function App() {
@@ -6,9 +8,12 @@ function App() {
   const [objectIDs, setObjectIDs] = useState([]);
   const [currentObjectIndex, setCurrentObjectIndex] = useState(null);
   const [pauseTimer, setPauseTimer] = useState(false);
-
+  const [currentArtwork, setCurrentArtwork] = useState(null);
   const [imgSrc, setImgSrc] = useState('');
   const [imgTitle, setImgTitle] = useState('');
+
+  // Error
+  const [error, setError] = useState(null);
 
   // useInterval helper hook to set an interval for useEffect
   const useInterval = (callback, delay) => {
@@ -54,15 +59,16 @@ function App() {
       if (res.title && res.title.length) {
         setImgTitle(res.title);
       }
+      setCurrentArtwork(res);
     }).catch((error) => {
       // If error, display error
-      console.error('error', error);
+      setError(error.message);
     });
   }
 
   useEffect(() => {
     // Fetch all object IDs from the server
-    fetch(`${process.env.REACT_APP_SERVER_URL}/images`, {
+    fetch(`${process.env.REACT_APP_SERVER_URL}/images1`, {
       method: 'GET',
       headers: {
         "Accept": "application/json",
@@ -79,7 +85,7 @@ function App() {
       }
     }).catch((error) => {
       // If error, display error
-      console.error('error', error);
+      setError(error.message);
     });
   }, []);
 
@@ -98,13 +104,13 @@ function App() {
       <h1>
         Met Museum Artwork
       </h1>
-      <div
-        onMouseEnter={() => setPauseTimer(true)}
-        onMouseLeave={() => setPauseTimer(false)}
-      >
-        {imgTitle && imgTitle.length && <h2>{imgTitle}</h2>}
-        <img src={imgSrc} alt={imgTitle} style={{ width: 200, height: 200, }} width={200} height={200} />
-      </div>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <Artwork
+        artwork={currentArtwork}
+        imgSrc={imgSrc}
+        imgTitle={imgTitle}
+        setPauseTimer={setPauseTimer}
+      />
     </div>
   );
 }
