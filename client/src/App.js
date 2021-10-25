@@ -1,23 +1,30 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
+  const [imgSrc, setImgSrc] = useState('');
+  const [imgTitle, setImgTitle] = useState('');
+
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_SERVER_URL}/images`, {
+      method: 'GET',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+    }).then((response) => {
+      console.log('response', response);
+    }).catch((error) => {
+      console.error('error', error);
+    });
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Home Art Gallery</h1>
+      {imgSrc && (
+        <img src={imgSrc} alt={imgTitle} style={{ width: 200, height: 200, }} width={200} height={200} />
+      )}
     </div>
   );
 }
