@@ -5,6 +5,7 @@ function App() {
   // Component state
   const [objectIDs, setObjectIDs] = useState([]);
   const [currentObjectIndex, setCurrentObjectIndex] = useState(null);
+  const [pauseTimer, setPauseTimer] = useState(false);
 
   const [imgSrc, setImgSrc] = useState('');
   const [imgTitle, setImgTitle] = useState('');
@@ -14,16 +15,21 @@ function App() {
     const savedCallback = useRef();
 
     useEffect(() => {
-      savedCallback.current = callback;
+      if (pauseTimer === false) {
+        savedCallback.current = callback;
+      }
+
     }, [callback]);
 
     useEffect(() => {
-      function tick() {
-        savedCallback.current();
-      }
-      if (delay !== null) {
-        let id = setInterval(tick, delay);
-        return () => clearInterval(id);
+      if (pauseTimer === false) {
+        function tick() {
+          savedCallback.current();
+        }
+        if (delay !== null) {
+          let id = setInterval(tick, delay);
+          return () => clearInterval(id);
+        }
       }
     }, [delay]);
   }
@@ -40,8 +46,14 @@ function App() {
         "Content-Type": "application/json",
       },
     }).then((response) => response.json()).then((res) => {
+      console.log('fetched object', res);
       // Fetched the object
-      console.log('fetch object', res);
+      if (res.primaryImage) {
+        setImgSrc(res.primaryImage);
+      }
+      if (res.title && res.title.length) {
+        setImgTitle(res.title);
+      }
     }).catch((error) => {
       // If error, display error
       console.error('error', error);
@@ -79,14 +91,20 @@ function App() {
       setCurrentObjectIndex(newIndex);
       fetchObject(objectIDs[newIndex]);
     }
-  }, 10000);
+  }, pauseTimer ? Math.max : 10000);
 
   return (
     <div className="App">
-      <h1>Home Art Gallery</h1>
-      {imgSrc && (
+      <h1>
+        Met Museum Artwork
+      </h1>
+      <div
+        onMouseEnter={() => setPauseTimer(true)}
+        onMouseLeave={() => setPauseTimer(false)}
+      >
+        {imgTitle && imgTitle.length && <h2>{imgTitle}</h2>}
         <img src={imgSrc} alt={imgTitle} style={{ width: 200, height: 200, }} width={200} height={200} />
-      )}
+      </div>
     </div>
   );
 }
